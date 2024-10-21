@@ -15,7 +15,7 @@ A starting point for Neovim that is:
 rm -rf ~/.config/nvim rm -rf ~/.local/state/nvim rm -rf ~/.local/share/nvim
 
 ## Installation
-git clone git@github.com:Justas-Lapiene/kickstart.git ~/.config/nvim && nvim
+git clone git@github.com:Justas-Lapiene/kickstart.nvim.git ~/.config/nvim && nvim
 ### Install Neovim
 
 Kickstart.nvim targets *only* the latest
