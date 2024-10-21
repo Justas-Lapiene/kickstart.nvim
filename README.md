@@ -10,8 +10,12 @@ A starting point for Neovim that is:
 
 **NOT** a Neovim distribution, but instead a starting point for your configuration.
 
-## Installation
+## Uninstall Neovim
 
+rm -rf ~/.config/nvim rm -rf ~/.local/state/nvim rm -rf ~/.local/share/nvim
+
+## Installation
+git clone git@github.com:Justas-Lapiene/kickstart.git ~/.config/nvim && nvim
 ### Install Neovim
 
 Kickstart.nvim targets *only* the latest
