@@ -16,17 +16,11 @@ return {
       vim.fn.sign_define('DiagnosticSignInfo', { text = ' ', texthl = 'DiagnosticSignInfo' })
       vim.fn.sign_define('DiagnosticSignHint', { text = '󰌵', texthl = 'DiagnosticSignHint' })
 
-      vim.api.nvim_create_autocmd({ 'BufWritePost', 'DirChanged' }, {
-        callback = function()
-          vim.cmd 'Neotree close'
-          vim.cmd 'Neotree reveal'
-        end,
-      })
-
       require('neo-tree').setup {
         close_if_last_window = false, -- Close Neo-tree if it is the last window left in the tab
         popup_border_style = 'rounded',
         enable_git_status = true,
+        git_status_async = true,
         enable_diagnostics = true,
         open_files_do_not_replace_types = { 'terminal', 'trouble', 'qf' }, -- when opening files, do not use windows containing these filetypes or buftypes
         sort_case_insensitive = false, -- used when sorting files and directories in the tree
