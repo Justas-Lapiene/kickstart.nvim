@@ -87,11 +87,12 @@ P.S. You can delete this when you're done too. It's your config now! :)
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 
+
 vim.opt.clipboard = 'unnamedplus'
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 vim.opt.undofile = true
-vim.opt.undodir = '~/.config/nvim/undo'
+vim.opt.undodir = vim.fn.expand '~/.config/nvim/undo'
 vim.opt.relativenumber = true
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
@@ -159,6 +160,11 @@ keymap.set('n', 'sv', ':vsplit<Return>', opts)
 keymap.set('n', '<C-j>', function()
   vim.diagnostic.goto_next()
 end, opts)
+
+-- Typescript-tools
+keymap.set('n', '<leader>cai', '<cmd>TSToolsAddMissingImports<cr>', { desc = 'Add missing imports' })
+keymap.set('n', '<leader>crs', '<cmd>TSToolsRemoveUnused<cr>', { desc = 'Remove unused statements' })
+keymap.set('n', '<leader>cri', '<cmd>TSToolsRemoveUnusedImports<cr>', { desc = 'Remove unused imports' })
 
 --nvim surround
 keymap.set('x', '(', 'S)', { remap = true })
@@ -498,6 +504,12 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
+        eslint = {
+          lintTask = {
+            enable = true,
+            run = 'onSave',
+          },
+        },
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
@@ -594,6 +606,8 @@ require('lazy').setup({
         lua = { 'stylua' },
         typescript = { 'prettier', 'prettierd', stop_after_first = true },
         javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -767,7 +781,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'html', 'lua', 'luadoc', 'vim', 'vimdoc', 'javascript', 'typescript', 'css', 'html' },
+      ensure_installed = { 'html', 'lua', 'luadoc', 'vim', 'vimdoc', 'javascript', 'typescript', 'css', 'html', 'tsx' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -775,7 +789,7 @@ require('lazy').setup({
         -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
         --  If you are experiencing weird indenting issues, add the language to
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
+        additional_vim_regex_highlighting = false,
       },
       indent = { enable = true, disable = { 'ruby' } },
     },
