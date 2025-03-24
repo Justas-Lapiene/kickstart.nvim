@@ -87,7 +87,6 @@ P.S. You can delete this when you're done too. It's your config now! :)
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 
-
 vim.opt.clipboard = 'unnamedplus'
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -184,6 +183,16 @@ keymap.set('n', 'N', 'Nzzzv')
 keymap.set('n', '<leader>s', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 keymap.set('n', '<leader>rr', '<cmd>LspRestart<cr>')
 keymap.set('n', '<leader>e', ':Neotree toggle<CR>', { noremap = true, silent = true })
+
+keymap.set('n', '<leader>dd', function()
+  if vim.api.nvim_win_get_config(0).relative == '' then -- Not inside floating window
+    vim.diagnostic.open_float() -- Open diagnostic in floating window
+    vim.diagnostic.open_float() -- Another call jumps into the floating window
+  else -- Inside a floating window
+    vim.api.nvim_win_close(0, false) -- Or you can press "q" in the floating window
+  end
+end, { desc = '[t] Toggle diagnostic floating window' })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
