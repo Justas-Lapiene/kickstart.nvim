@@ -193,6 +193,10 @@ keymap.set('n', '<leader>dd', function()
   end
 end, { desc = '[t] Toggle diagnostic floating window' })
 
+keymap.set('n', '<leader>z', ':ZenMode<CR>', opts)
+
+keymap.set('n', '<leader>gb', '<cmd>GitBlameOpenCommitURL<CR>', opts)
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -592,6 +596,7 @@ require('lazy').setup({
         mode = '',
         desc = '[F]ormat buffer',
       },
+      { '<leader>W', '<cmd>noautocmd write<CR>', mode = 'n', desc = 'Save without formatting' },
     },
     opts = {
       notify_on_error = true,
