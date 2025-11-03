@@ -1,15 +1,41 @@
 return {
   'yetone/avante.nvim',
+  -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+  -- ⚠️ must add this setting! ! !
+  build = vim.fn.has 'win32' ~= 0 and 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false' or 'make',
   event = 'VeryLazy',
-  build = 'make', -- ensure make is available; if build fails, install make or remove this line
+  version = false, -- Never set this value to "*"! Never!
+  ---@module 'avante'
+  ---@type avante.Config
+  opts = {
+    provider = 'openai', -- or "anthropic", "openrouter", "ollama"
+    model = 'gpt-4o', -- change per provider (see examples below)
+    ui = {
+
+      float = { border = 'rounded' }, -- or "single", "double"
+      input = { border = 'rounded' },
+      sidebar = { border = 'rounded' },
+    },
+  },
   dependencies = {
     'nvim-lua/plenary.nvim',
     'MunifTanjim/nui.nvim',
-    'nvim-tree/nvim-web-devicons', -- optional, for icons
-    'stevearc/dressing.nvim', -- optional, nicer UI prompts
-  },
-  opts = {
-    provider = 'openai', -- or "anthropic", "openrouter", "ollama"
-    model = 'gpt-4o-mini', -- change per provider (see examples below)
+    --- The below dependencies are optional,
+    'nvim-mini/mini.pick', -- for file_selector provider mini.pick
+    'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
+    'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
+    'ibhagwan/fzf-lua', -- for file_selector provider fzf
+    'stevearc/dressing.nvim', -- for input provider dressing
+    'folke/snacks.nvim', -- for input provider snacks
+    'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
+    'zbirenbaum/copilot.lua', -- for providers='copilot'
+    {
+      -- Make sure to set this up properly if you have lazy=true
+      'MeanderingProgrammer/render-markdown.nvim',
+      opts = {
+        file_types = { 'markdown', 'Avante' },
+      },
+      ft = { 'markdown', 'Avante' },
+    },
   },
 }
