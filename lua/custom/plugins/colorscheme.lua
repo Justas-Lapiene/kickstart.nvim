@@ -10,6 +10,7 @@ return { -- You can easily change to a different colorscheme.
     require('ayu').setup {
       overrides = function()
         return {
+          -- Normal = { bg = 'None' },
           NeoTreeGitModified = { fg = colors.func },
           MatchParen = { fg = colors.warning, bold = true },
           NeoTreeDirectoryName = { fg = colors.fg },
