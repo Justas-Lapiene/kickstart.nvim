@@ -8,14 +8,8 @@ return {
   ---@module 'avante'
   ---@type avante.Config
   opts = {
-    provider = 'openai', -- or "anthropic", "openrouter", "ollama"
-    model = 'gpt-4o', -- change per provider (see examples below)
-    ui = {
-
-      float = { border = 'rounded' }, -- or "single", "double"
-      input = { border = 'rounded' },
-      sidebar = { border = 'rounded' },
-    },
+    provider = 'claude', -- or "anthropic", "openrouter", "ollama"
+    model = 'claude-opus-4-1',
   },
   dependencies = {
     'nvim-lua/plenary.nvim',
