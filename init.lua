@@ -183,6 +183,7 @@ keymap.set('n', 'N', 'Nzzzv')
 keymap.set('n', '<leader>s', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 keymap.set('n', '<leader>rr', '<cmd>LspRestart<cr>')
 keymap.set('n', '<leader>e', ':Neotree toggle<CR>', { noremap = true, silent = true })
+keymap.set('n', '<leader>cc', '<cmd>ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
 
 keymap.set('n', '<leader>dd', function()
   if vim.api.nvim_win_get_config(0).relative == '' then -- Not inside floating window
@@ -368,7 +369,8 @@ require('lazy').setup({
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
     -- event = { "BufReadPre", "BufNewFile" }, -- optional lazy-load
-    commit = '2010fc6ec03e2da552b4886fceb2f7bc0fc2e9c0',
+    -- commit = '2010fc6ec03e2da552b4886fceb2f7bc0fc2e9c0',
+    commit = '40f120c10ea4b87311175539a183c3b75eab95a3',
     dependencies = {
       { 'williamboman/mason.nvim', config = true },
       'williamboman/mason-lspconfig.nvim',
@@ -476,6 +478,14 @@ require('lazy').setup({
           end,
         },
       }
+      -- Explicitly set up servers (avoids handler issues)
+      local lspconfig = require 'lspconfig'
+      lspconfig.eslint.setup(vim.tbl_deep_extend('force', {}, servers.eslint or {}, { capabilities = capabilities }))
+      lspconfig.lua_ls.setup(vim.tbl_deep_extend('force', {}, servers.lua_ls or {}, { capabilities = capabilities }))
+      lspconfig.tailwindcss.setup { capabilities = capabilities }
+      lspconfig.cssls.setup { capabilities = capabilities }
+      lspconfig.jsonls.setup { capabilities = capabilities }
+      lspconfig.bashls.setup { capabilities = capabilities }
     end,
   },
 
@@ -514,10 +524,10 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- typescript = { 'eslint', 'prettierd', stop_after_first = true },
-        -- javascript = { 'prettierd', 'prettier', stop_after_first = true },
-        -- javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
-        -- typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        typescript = { 'prettierd', 'prettier', stop_after_first = true },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
