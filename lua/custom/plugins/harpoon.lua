@@ -3,19 +3,17 @@ local function safe_select(n)
   local list = harpoon:list()
   local ok = pcall(list.select, list, n)
   if not ok then
-    -- Buffer was opened but cursor restore failed (buffer not fully loaded).
-    -- Set cursor once the buffer finishes reading from disk.
+    -- Harpoon's select failed because the buffer wasn't fully loaded from disk.
+    -- Fall back to :edit which properly loads the file, then restore cursor.
     local item = list.items[n]
-    if item and item.context then
-      vim.api.nvim_create_autocmd('BufReadPost', {
-        once = true,
-        callback = function()
-          pcall(vim.api.nvim_win_set_cursor, 0, {
-            item.context.row or 1,
-            item.context.col or 0,
-          })
-        end,
-      })
+    if item then
+      vim.cmd('edit ' .. vim.fn.fnameescape(item.value))
+      if item.context then
+        pcall(vim.api.nvim_win_set_cursor, 0, {
+          item.context.row or 1,
+          item.context.col or 0,
+        })
+      end
     end
   end
 end
