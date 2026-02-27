@@ -372,6 +372,7 @@ require('lazy').setup({
         },
         tailwindcss = {},
         cssls = {},
+        cssmodules_ls = {},
         jsonls = {},
         bashls = {},
       }
