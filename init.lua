@@ -317,6 +317,19 @@ require('lazy').setup({
           map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
           map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
           map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+          map('<leader>rr', function()
+            local buf = vim.api.nvim_get_current_buf()
+            local clients = vim.lsp.get_clients({ bufnr = buf })
+            vim.diagnostic.reset()
+            for _, client in ipairs(clients) do
+              if client.name ~= 'GitHub Copilot' then
+                client:stop()
+              end
+            end
+            vim.defer_fn(function()
+              vim.cmd('edit!')
+            end, 500)
+          end, '[R]estart LSP')
 
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
