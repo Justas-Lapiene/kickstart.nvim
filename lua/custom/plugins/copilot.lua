@@ -1,4 +1,4 @@
 return {
   'github/copilot.vim',
-  tag = 'v1.55.0',
+  copilot_model = 'gpt-4o-copilot', -- Pins completion to OpenAI's optimized 4o
 }
