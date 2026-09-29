@@ -128,6 +128,10 @@ vim.opt.cursorline = true
 vim.opt.timeoutlen = 300
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.opt.autoread = true
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold' }, {
+  command = 'checktime',
+})
 
 -- [[ Keymaps ]]
 local keymap = vim.keymap
