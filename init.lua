@@ -241,7 +241,8 @@ require('lazy').setup {
       local servers = { 'eslint', 'lua_ls', 'tailwindcss', 'cssls', 'cssmodules_ls', 'jsonls', 'bashls' }
 
       require('mason').setup()
-      require('mason-tool-installer').setup { ensure_installed = { 'stylua' } }
+      require('mason-tool-installer').setup { ensure_installed = { 'stylua', 'copilot-language-server' } }
+      vim.lsp.enable 'copilot'
       require('mason-lspconfig').setup {
         ensure_installed = servers,
         -- stylua is a formatter run by conform; do not start it as an LSP server
