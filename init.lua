@@ -327,17 +327,39 @@ require('lazy').setup {
 
   {
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
+    lazy = false,
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs',
-    opts = {
-      ensure_installed = { 'html', 'lua', 'luadoc', 'vim', 'vimdoc', 'javascript', 'typescript', 'css', 'tsx' },
-      auto_install = true,
-      highlight = {
-        enable = true,
-        additional_vim_regex_highlighting = false,
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-    },
+    config = function()
+      require('nvim-treesitter').install {
+        'bash',
+        'css',
+        'html',
+        'javascript',
+        'json',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'tsx',
+        'typescript',
+        'vim',
+        'vimdoc',
+        'yaml',
+      }
+
+      -- Highlighting and indentation come from Neovim's built-in treesitter;
+      -- the plugin only manages parsers and queries.
+      vim.api.nvim_create_autocmd('FileType', {
+        group = vim.api.nvim_create_augroup('treesitter-start', { clear = true }),
+        callback = function(event)
+          if not pcall(vim.treesitter.start, event.buf) then
+            return
+          end
+          vim.bo[event.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end,
+      })
+    end,
   },
 
   { import = 'custom.plugins' },
