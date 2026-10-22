@@ -9,7 +9,7 @@ return {
       'nvim-tree/nvim-web-devicons',
       'MunifTanjim/nui.nvim',
     },
-    cmd = 'Neotree',
+    lazy = false,
     keys = {
       { '\\', '<cmd>Neotree reveal<cr>', desc = 'Reveal file in Neo-tree' },
     },
