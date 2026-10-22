@@ -106,6 +106,9 @@ vim.opt.autoindent = true
 vim.opt.smartindent = true
 vim.opt.hlsearch = true
 vim.opt.backup = false
+-- Never show the "found a swap file" (E325) prompt: it cannot be answered from
+-- inside a vim.schedule callback, which breaks LSP jumps into unopened buffers.
+vim.opt.shortmess:append 'A'
 vim.opt.showcmd = true
 vim.opt.cmdheight = 0
 vim.opt.laststatus = 0
@@ -176,7 +179,7 @@ keymap.set('n', 'N', 'Nzzzv')
 keymap.set('n', '<leader>s', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 keymap.set('n', '<leader>rr', '<cmd>LspRestart<cr>')
 keymap.set('n', '<leader>e', ':Neotree toggle<CR>', { noremap = true, silent = true })
-keymap.set('n', '<leader>cc', '<cmd>ClaudeCode<CR>', { desc = 'Toggle Claude Code' })
+keymap.set('n', '<leader>cc', '<cmd>ClaudeCode --continue<CR>', { desc = 'Toggle Claude Code' })
 
 keymap.set('n', '<leader>dd', function()
   if vim.api.nvim_win_get_config(0).relative == '' then -- Not inside floating window

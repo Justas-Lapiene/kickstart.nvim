@@ -6,19 +6,24 @@ return {
       provider = 'external',
       provider_opts = {
         external_terminal_cmd = function(cmd, env)
-          local env_exports = ''
-          for k, v in pairs(env) do
-            env_exports = env_exports .. 'export ' .. k .. '=' .. vim.fn.shellescape(v) .. '; '
+          local args = { 'kitten', '@', 'launch', '--type=window', '--location=vsplit', '--bias=30', '--cwd=current' }
+          table.insert(args, '--env')
+          table.insert(args, 'PATH=' .. vim.env.PATH)
+          for key, value in pairs(env) do
+            table.insert(args, '--env')
+            table.insert(args, key .. '=' .. value)
           end
-          local full = 'tmux split-window -h -l 30% ' .. vim.fn.shellescape(env_exports .. cmd)
-          vim.fn.system(full)
+          table.insert(args, 'sh')
+          table.insert(args, '-c')
+          table.insert(args, cmd)
+          vim.fn.system(args)
           return 'true'
         end,
       },
     },
   },
   keys = {
-    { '<leader>cc', '<cmd>ClaudeCode<cr>', desc = 'Toggle Claude' },
+    { '<leader>cc', '<cmd>ClaudeCode --continue<cr>', desc = 'Toggle Claude' },
     { '<leader>cf', '<cmd>ClaudeCodeFocus<cr>', desc = 'Focus Claude' },
     -- { "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
     -- { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
