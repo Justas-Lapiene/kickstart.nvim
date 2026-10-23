@@ -22,6 +22,8 @@ return {
     keymaps = {
       view = {
         { 'n', 'q', '<cmd>DiffviewClose<cr>', { desc = 'Close diffview' } },
+        { 'n', ']c', ']czz', { desc = 'Next hunk, centered' } },
+        { 'n', '[c', '[czz', { desc = 'Previous hunk, centered' } },
       },
       file_panel = {
         { 'n', 'q', '<cmd>DiffviewClose<cr>', { desc = 'Close diffview' } },

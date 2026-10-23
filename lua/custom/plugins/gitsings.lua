@@ -16,6 +16,7 @@ return {
         else
           gitsigns.nav_hunk 'next'
         end
+        vim.cmd.normal { 'zz', bang = true }
       end, { desc = 'Jump to next git [c]hange' })
 
       map('n', '[c', function()
@@ -24,6 +25,7 @@ return {
         else
           gitsigns.nav_hunk 'prev'
         end
+        vim.cmd.normal { 'zz', bang = true }
       end, { desc = 'Jump to previous git [c]hange' })
     end,
   },
