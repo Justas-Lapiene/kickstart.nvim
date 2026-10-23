@@ -6,6 +6,7 @@ return {
       provider = 'external',
       provider_opts = {
         external_terminal_cmd = function(cmd, env)
+          vim.fn.system { 'kitten', '@', 'goto-layout', 'splits' }
           local args = { 'kitten', '@', 'launch', '--type=window', '--location=vsplit', '--bias=30', '--cwd=current' }
           table.insert(args, '--env')
           table.insert(args, 'PATH=' .. vim.env.PATH)
