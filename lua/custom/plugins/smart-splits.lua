@@ -1,10 +1,18 @@
 return {
   'mrjones2014/smart-splits.nvim',
   lazy = false,
+  dependencies = {
+    {
+      'smart-splits-nvim/backend-kitty',
+      module = 'smart-splits-backend-kitty',
+      opts = {},
+    },
+  },
   opts = {
     ignored_buftypes = { 'prompt' },
     ignored_filetypes = {},
     move = { at_edge = 'stop' },
+    mux = { backend = 'smart-splits-backend-kitty' },
   },
   keys = {
     {
