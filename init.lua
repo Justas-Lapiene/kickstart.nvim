@@ -32,6 +32,7 @@ vim.opt.splitright = true
 vim.opt.splitkeep = 'cursor'
 vim.opt.scrolloff = 15
 vim.opt.cursorline = true
+vim.opt.cursorlineopt = 'number'
 vim.opt.timeoutlen = 300
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
