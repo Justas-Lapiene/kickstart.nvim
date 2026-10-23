@@ -46,7 +46,10 @@ local keymap = vim.keymap
 local opts = { noremap = true, silent = true }
 keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
-keymap.set('n', '<leader>q', '<cmd>quit<cr>', { desc = 'Quit' })
+keymap.set('n', '<leader>q', function()
+  local in_diffview = package.loaded['diffview'] and require('diffview.lib').get_current_view() ~= nil
+  vim.cmd(in_diffview and 'DiffviewClose' or 'quit')
+end, { desc = 'Quit window, or close diffview' })
 keymap.set('n', '<leader>w', '<cmd>write<cr>', { desc = 'Write' })
 -- Select all
 keymap.set('n', '<C-a>', 'gg<S-v>G')
