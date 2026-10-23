@@ -2,6 +2,8 @@ return {
   'mrjones2014/smart-splits.nvim',
   lazy = false,
   opts = {
+    ignored_buftypes = { 'prompt' },
+    ignored_filetypes = {},
     move = { at_edge = 'stop' },
   },
   keys = {
