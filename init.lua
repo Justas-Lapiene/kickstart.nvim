@@ -77,6 +77,9 @@ keymap.set('n', 'N', 'Nzzzv')
 keymap.set('n', '<leader>s', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 keymap.set('n', '<leader>e', ':Neotree toggle<CR>', opts)
 keymap.set('n', '<leader>cc', '<cmd>ClaudeCode --continue<CR>', { desc = 'Toggle Claude Code' })
+keymap.set('x', '<leader>cr', function()
+  require('custom.inline-edit').edit_selection()
+end, { desc = 'Rewrite selection with Claude' })
 
 keymap.set('n', '<leader>dd', function()
   if vim.api.nvim_win_get_config(0).relative == '' then -- Not inside floating window
