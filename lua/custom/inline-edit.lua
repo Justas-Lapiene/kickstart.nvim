@@ -18,17 +18,81 @@ local function strip_fences(text)
   return stripped
 end
 
-local function show_pending(buffer, line, namespace)
-  vim.api.nvim_buf_set_extmark(buffer, namespace, line, 0, {
-    virt_text = { { '  claude is editing…', 'Comment' } },
-    virt_text_pos = 'eol',
-  })
+local SPINNER_FRAMES = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' }
+
+-- Highlights the pending range, animates a spinner on its first line and in a
+-- corner float. Returns a function that tears everything down.
+local function start_loader(buffer, first, last, namespace)
+  local started = vim.uv.now()
+  local frame = 1
+  local line_mark, status_window, status_buffer
+
+  for line = first - 1, last - 1 do
+    vim.api.nvim_buf_set_extmark(buffer, namespace, line, 0, { line_hl_group = 'Visual' })
+  end
+
+  status_buffer = vim.api.nvim_create_buf(false, true)
+  vim.bo[status_buffer].bufhidden = 'wipe'
+
+  local function label()
+    local seconds = math.floor((vim.uv.now() - started) / 1000)
+    return SPINNER_FRAMES[frame] .. ' Claude editing ' .. (last - first + 1) .. ' lines · ' .. seconds .. 's'
+  end
+
+  local function render()
+    frame = frame % #SPINNER_FRAMES + 1
+    local text = label()
+    if vim.api.nvim_buf_is_valid(buffer) then
+      line_mark = vim.api.nvim_buf_set_extmark(buffer, namespace, first - 1, 0, {
+        id = line_mark,
+        virt_text = { { '  ' .. text, 'DiagnosticInfo' } },
+        virt_text_pos = 'eol',
+      })
+    end
+    if status_buffer and vim.api.nvim_buf_is_valid(status_buffer) then
+      vim.api.nvim_buf_set_lines(status_buffer, 0, -1, false, { ' ' .. text .. ' ' })
+      local width = vim.fn.strdisplaywidth(text) + 2
+      local config = {
+        relative = 'editor',
+        anchor = 'SE',
+        width = width,
+        height = 1,
+        row = vim.o.lines - 2,
+        col = vim.o.columns - 1,
+        style = 'minimal',
+        border = 'rounded',
+        focusable = false,
+        zindex = 60,
+      }
+      if status_window and vim.api.nvim_win_is_valid(status_window) then
+        vim.api.nvim_win_set_config(status_window, config)
+      else
+        status_window = vim.api.nvim_open_win(status_buffer, false, config)
+        vim.wo[status_window].winhighlight = 'Normal:DiagnosticInfo,FloatBorder:DiagnosticInfo'
+      end
+    end
+  end
+
+  render()
+  local timer = vim.uv.new_timer()
+  timer:start(100, 100, vim.schedule_wrap(render))
+
+  return function()
+    timer:stop()
+    timer:close()
+    if vim.api.nvim_buf_is_valid(buffer) then
+      vim.api.nvim_buf_clear_namespace(buffer, namespace, 0, -1)
+    end
+    if status_window and vim.api.nvim_win_is_valid(status_window) then
+      vim.api.nvim_win_close(status_window, true)
+    end
+  end
 end
 
 local function run(target)
   local buffer = target.buffer
   local namespace = vim.api.nvim_create_namespace 'claude-inline-edit'
-  show_pending(buffer, target.first - 1, namespace)
+  local stop_loader = start_loader(buffer, target.first, target.last, namespace)
 
   local total_lines = vim.api.nvim_buf_line_count(buffer)
   local context_before = vim.api.nvim_buf_get_lines(buffer, math.max(0, target.first - 1 - CONTEXT_LINES), target.first - 1, false)
@@ -59,7 +123,7 @@ local function run(target)
     { 'claude', '-p', '--model', 'haiku', '--output-format', 'text', '--system-prompt', SYSTEM_PROMPT },
     { stdin = input, text = true },
     vim.schedule_wrap(function(result)
-      vim.api.nvim_buf_clear_namespace(buffer, namespace, 0, -1)
+      stop_loader()
       if not vim.api.nvim_buf_is_valid(buffer) then
         return
       end
