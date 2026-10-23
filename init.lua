@@ -189,7 +189,7 @@ require('lazy').setup {
             local clients = vim.lsp.get_clients { bufnr = buf }
             vim.diagnostic.reset()
             for _, client in ipairs(clients) do
-              if client.name ~= 'GitHub Copilot' then
+              if client.name ~= 'copilot' then
                 client:stop()
               end
             end
@@ -199,6 +199,9 @@ require('lazy').setup {
           end, '[R]estart LSP')
 
           local client = vim.lsp.get_client_by_id(event.data.client_id)
+          if client and client.name == 'copilot' then
+            vim.lsp.inline_completion.enable(true, { bufnr = event.buf })
+          end
           if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
             local hlgrp = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
@@ -296,7 +299,13 @@ require('lazy').setup {
           ['<C-b>'] = cmp.mapping.scroll_docs(-4),
           ['<C-f>'] = cmp.mapping.scroll_docs(4),
           ['<CR>'] = cmp.mapping.confirm { select = true },
-          ['<Tab>'] = cmp.mapping.select_next_item(),
+          ['<Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            elseif not vim.lsp.inline_completion.get() then
+              fallback()
+            end
+          end, { 'i', 's' }),
           ['<S-Tab>'] = cmp.mapping.select_prev_item(),
           ['<C-n>'] = cmp.mapping.complete {},
           ['<ESC>'] = cmp.mapping(function(fallback)
