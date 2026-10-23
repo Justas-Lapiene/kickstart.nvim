@@ -19,58 +19,44 @@ local function strip_fences(text)
 end
 
 local SPINNER_FRAMES = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' }
+local MODEL = 'haiku'
+local MODEL_LABEL = 'claude-haiku-5-5'
 
--- Highlights the pending range, animates a spinner on its first line and in a
--- corner float. Returns a function that tears everything down.
-local function start_loader(buffer, first, last, namespace)
+-- Centered floating status window with a spinner, model name and elapsed time.
+-- Returns a function that closes it.
+local function start_loader(line_count)
   local started = vim.uv.now()
-  local frame = 1
-  local line_mark, status_window, status_buffer
-
-  for line = first - 1, last - 1 do
-    vim.api.nvim_buf_set_extmark(buffer, namespace, line, 0, { line_hl_group = 'Visual' })
-  end
-
-  status_buffer = vim.api.nvim_create_buf(false, true)
+  local frame = 0
+  local status_buffer = vim.api.nvim_create_buf(false, true)
   vim.bo[status_buffer].bufhidden = 'wipe'
 
-  local function label()
-    local seconds = math.floor((vim.uv.now() - started) / 1000)
-    return SPINNER_FRAMES[frame] .. ' Claude editing ' .. (last - first + 1) .. ' lines · ' .. seconds .. 's'
-  end
+  local width, height = 44, 3
+  local status_window = vim.api.nvim_open_win(status_buffer, false, {
+    relative = 'editor',
+    width = width,
+    height = height,
+    row = math.floor((vim.o.lines - height) / 2),
+    col = math.floor((vim.o.columns - width) / 2),
+    style = 'minimal',
+    border = 'rounded',
+    title = ' Claude ',
+    title_pos = 'center',
+    focusable = false,
+    zindex = 60,
+  })
+  vim.wo[status_window].winhighlight = 'Normal:NormalFloat,FloatBorder:DiagnosticInfo,FloatTitle:DiagnosticInfo'
 
   local function render()
+    if not vim.api.nvim_buf_is_valid(status_buffer) then
+      return
+    end
     frame = frame % #SPINNER_FRAMES + 1
-    local text = label()
-    if vim.api.nvim_buf_is_valid(buffer) then
-      line_mark = vim.api.nvim_buf_set_extmark(buffer, namespace, first - 1, 0, {
-        id = line_mark,
-        virt_text = { { '  ' .. text, 'DiagnosticInfo' } },
-        virt_text_pos = 'eol',
-      })
-    end
-    if status_buffer and vim.api.nvim_buf_is_valid(status_buffer) then
-      vim.api.nvim_buf_set_lines(status_buffer, 0, -1, false, { ' ' .. text .. ' ' })
-      local width = vim.fn.strdisplaywidth(text) + 2
-      local config = {
-        relative = 'editor',
-        anchor = 'SE',
-        width = width,
-        height = 1,
-        row = vim.o.lines - 2,
-        col = vim.o.columns - 1,
-        style = 'minimal',
-        border = 'rounded',
-        focusable = false,
-        zindex = 60,
-      }
-      if status_window and vim.api.nvim_win_is_valid(status_window) then
-        vim.api.nvim_win_set_config(status_window, config)
-      else
-        status_window = vim.api.nvim_open_win(status_buffer, false, config)
-        vim.wo[status_window].winhighlight = 'Normal:DiagnosticInfo,FloatBorder:DiagnosticInfo'
-      end
-    end
+    local seconds = math.floor((vim.uv.now() - started) / 1000)
+    vim.api.nvim_buf_set_lines(status_buffer, 0, -1, false, {
+      '  ' .. SPINNER_FRAMES[frame] .. '  Rewriting ' .. line_count .. ' line' .. (line_count == 1 and '' or 's'),
+      '     Model    ' .. MODEL_LABEL,
+      '     Elapsed  ' .. seconds .. 's',
+    })
   end
 
   render()
@@ -80,10 +66,7 @@ local function start_loader(buffer, first, last, namespace)
   return function()
     timer:stop()
     timer:close()
-    if vim.api.nvim_buf_is_valid(buffer) then
-      vim.api.nvim_buf_clear_namespace(buffer, namespace, 0, -1)
-    end
-    if status_window and vim.api.nvim_win_is_valid(status_window) then
+    if vim.api.nvim_win_is_valid(status_window) then
       vim.api.nvim_win_close(status_window, true)
     end
   end
@@ -91,8 +74,7 @@ end
 
 local function run(target)
   local buffer = target.buffer
-  local namespace = vim.api.nvim_create_namespace 'claude-inline-edit'
-  local stop_loader = start_loader(buffer, target.first, target.last, namespace)
+  local stop_loader = start_loader(#target.lines)
 
   local total_lines = vim.api.nvim_buf_line_count(buffer)
   local context_before = vim.api.nvim_buf_get_lines(buffer, math.max(0, target.first - 1 - CONTEXT_LINES), target.first - 1, false)
@@ -120,7 +102,7 @@ local function run(target)
   }, '\n')
 
   vim.system(
-    { 'claude', '-p', '--model', 'haiku', '--output-format', 'text', '--system-prompt', SYSTEM_PROMPT },
+    { 'claude', '-p', '--model', MODEL, '--output-format', 'text', '--system-prompt', SYSTEM_PROMPT },
     { stdin = input, text = true },
     vim.schedule_wrap(function(result)
       stop_loader()
