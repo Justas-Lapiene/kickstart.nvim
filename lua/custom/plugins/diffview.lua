@@ -1,7 +1,7 @@
 return {
   'sindrets/diffview.nvim',
   dependencies = { 'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons' },
-  cmd = { 'DiffviewOpen', 'DiffviewFileHistory', 'DiffviewClose' },
+  cmd = { 'DiffviewOpen', 'DiffviewFileHistory', 'DiffviewClose', 'DiffviewToggleFiles' },
   keys = {
     { '<leader>gd', '<cmd>DiffviewOpen<cr>', desc = 'Diff: working tree vs index' },
     { '<leader>gD', '<cmd>DiffviewOpen origin/master...HEAD --imply-local<cr>', desc = 'Diff: branch vs master' },
@@ -33,14 +33,17 @@ return {
     keymaps = {
       view = {
         { 'n', 'q', '<cmd>DiffviewClose<cr>', { desc = 'Close diffview' } },
+        { 'n', '<leader>e', '<cmd>DiffviewToggleFiles<cr>', { desc = 'Toggle file panel' } },
         { 'n', ']c', ']czz', { desc = 'Next hunk, centered' } },
         { 'n', '[c', '[czz', { desc = 'Previous hunk, centered' } },
       },
       file_panel = {
         { 'n', 'q', '<cmd>DiffviewClose<cr>', { desc = 'Close diffview' } },
+        { 'n', '<leader>e', '<cmd>DiffviewToggleFiles<cr>', { desc = 'Toggle file panel' } },
       },
       file_history_panel = {
         { 'n', 'q', '<cmd>DiffviewClose<cr>', { desc = 'Close diffview' } },
+        { 'n', '<leader>e', '<cmd>DiffviewToggleFiles<cr>', { desc = 'Toggle file panel' } },
       },
     },
   },
