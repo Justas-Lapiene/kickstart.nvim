@@ -126,6 +126,7 @@ local function open_prompt(target)
 
   vim.keymap.set('n', '<CR>', send, { buffer = prompt_buffer, desc = 'Send instruction to Claude' })
   vim.keymap.set('n', 'q', close, { buffer = prompt_buffer, desc = 'Cancel' })
+  vim.keymap.set('n', '<Esc>', close, { buffer = prompt_buffer, desc = 'Cancel' })
   vim.cmd.startinsert()
 end
 
