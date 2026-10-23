@@ -11,6 +11,16 @@ return {
   },
   opts = {
     enhanced_diff_hl = true,
+    hooks = {
+      -- GitHub style: red tints on the old side, green tints on the new side,
+      -- flat grey filler without dashes.
+      diff_buf_win_enter = function(_, window_id, context)
+        local side = context.symbol == 'a' and 'DiffAdd:GithubDiffDeleteLine,DiffChange:GithubDiffDeleteLine,DiffText:GithubDiffDeleteWord'
+          or 'DiffAdd:GithubDiffAddLine,DiffChange:GithubDiffAddLine,DiffText:GithubDiffAddWord'
+        vim.wo[window_id].winhl = side .. ',DiffDelete:GithubDiffFiller'
+        vim.wo[window_id].fillchars = 'diff: '
+      end,
+    },
     view = {
       default = { layout = 'diff2_horizontal', winbar_info = true },
       merge_tool = { layout = 'diff3_mixed' },
