@@ -19,6 +19,7 @@ return {
           or 'DiffAdd:GithubDiffAddLine,DiffChange:GithubDiffAddLine,DiffText:GithubDiffAddWord'
         vim.wo[window_id].winhl = side .. ',DiffDelete:GithubDiffFiller'
         vim.wo[window_id].fillchars = 'diff: '
+        vim.wo[window_id].foldenable = false
       end,
     },
     view = {
