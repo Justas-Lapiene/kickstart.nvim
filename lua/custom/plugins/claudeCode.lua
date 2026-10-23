@@ -7,7 +7,17 @@ return {
       provider_opts = {
         external_terminal_cmd = function(cmd, env)
           vim.fn.system { 'kitten', '@', 'goto-layout', 'splits' }
-          local args = { 'kitten', '@', 'launch', '--type=window', '--location=vsplit', '--bias=30', '--cwd=current' }
+
+          -- Reuse the Claude window launched by this Neovim instance if it is
+          -- still open, instead of starting another one.
+          local tag = 'var:claude_nvim=' .. (vim.env.KITTY_WINDOW_ID or 'unknown')
+          local existing = vim.fn.system { 'kitten', '@', 'ls', '--match', tag }
+          if vim.v.shell_error == 0 and existing:find('"id"', 1, true) then
+            vim.fn.system { 'kitten', '@', 'focus-window', '--match', tag }
+            return 'true'
+          end
+
+          local args = { 'kitten', '@', 'launch', '--type=window', '--location=vsplit', '--bias=30', '--cwd=current', '--var', tag:sub(5) }
           table.insert(args, '--env')
           table.insert(args, 'PATH=' .. vim.env.PATH)
           for key, value in pairs(env) do
