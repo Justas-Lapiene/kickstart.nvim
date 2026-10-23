@@ -4,7 +4,7 @@ return {
   cmd = { 'DiffviewOpen', 'DiffviewFileHistory', 'DiffviewClose' },
   keys = {
     { '<leader>gd', '<cmd>DiffviewOpen<cr>', desc = 'Diff: working tree vs index' },
-    { '<leader>gD', '<cmd>DiffviewOpen origin/master...HEAD<cr>', desc = 'Diff: branch vs master' },
+    { '<leader>gD', '<cmd>DiffviewOpen origin/master...HEAD --imply-local<cr>', desc = 'Diff: branch vs master' },
     { '<leader>gh', '<cmd>DiffviewFileHistory %<cr>', desc = 'Diff: current file history' },
     { '<leader>gH', '<cmd>DiffviewFileHistory<cr>', desc = 'Diff: repo history' },
     { '<leader>gq', '<cmd>DiffviewClose<cr>', desc = 'Diff: close' },
